@@ -1,26 +1,113 @@
 apply plugin: 'com.android.application'
 
 android {
+    /**
+     * 编译的sdk版本
+     */
     compileSdkVersion 23
+    /**
+     * 编译的build-tools版本
+     */
     buildToolsVersion "23.0.1"
 
-    defaultConfig {
-        applicationId "gift.witch.gradle"
-        minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+    /**
+     * 资源映射
+     */
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/java'
+            }
+            resources {
+                srcDir 'src/resources'
+            }
+        }
+        integrationTest{
+
+        }
     }
+    /**
+     * 默认配置，为ProductFlavor
+     */
+    defaultConfig {
+        /**
+         * 应用ID
+         */
+        applicationId "gift.witch.gradle"
+        /**
+         * 应用ID后缀
+         */
+        applicationIdSuffix ".dev"
+
+        /**
+         * 最小sdk版本号
+         */
+        minSdkVersion 14
+        /**
+         * 最大sdk版本号
+         */
+        maxSdkVersion 23
+        /**
+         * 目标sdk版本号
+         */
+        targetSdkVersion 23
+        /**
+         * 应用版本号
+         */
+        versionCode 1
+        /**
+         * 应用版本名称
+         */
+        versionName "1.0"
+
+    }
+
+    signingConfigs {
+        staging.initWith(signingConfigs.debug)
+        release {
+            storeFile file("keystore.jks")
+            storePassword"123456"
+            keyAlias "aliastest"
+            keyPassword "123456"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        staging {
+            applicationIdSuffix ".staging"
+            versionNameSuffix "-staging"
+            debuggable true
+            signingConfig signingConfigs.staging
+        }
     }
+
 }
 
+/**
+ * 依赖
+ */
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    /**
+     * 本地依赖形式
+     */
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+    /**
+     * 远程依赖简洁形式
+     */
     compile 'com.android.support:appcompat-v7:23.1.1'
+    /**
+     * 远程依赖完全形式
+     */
+    compile 'com.google.code.gson:gson:2.3'
+    stagingCompile 'junit:junit:4.12'
 }
+
+task myTask << {
+    println ' I am myTask'
+}
+
