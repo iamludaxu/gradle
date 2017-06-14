@@ -14,6 +14,10 @@ public class MainActivity extends AppCompatActivity {
         TextView versionCodeTV = (TextView) findViewById(R.id.versionCode);
         TextView versionNameTV = (TextView) findViewById(R.id.versionName);
         TextView packageNameTV = (TextView) findViewById(R.id.packageName);
+        TextView buildConfigTV = (TextView) findViewById(R.id.buildConfig);
+        TextView resValueTV = (TextView) findViewById(R.id.resValue);
+        TextView flavorStringTV = (TextView) findViewById(R.id.flavorString);
+
 
         try {
             String pkName = this.getPackageName();
@@ -27,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
 
+        buildConfigTV.setText(BuildConfig.API_URL);
+        resValueTV.setText(R.string.appname);
+        flavorStringTV.setText(R.string.flavor_string);
+        flavorStringTV.setBackgroundColor(this.getResources().getColor(R.color.flavor_color));
 
     }
 }

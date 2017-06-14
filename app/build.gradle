@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
 
+
+
 android {
     /**
      * 编译的sdk版本
      */
-    compileSdkVersion 23
+    compileSdkVersion rootProject.ext.compileSdkVersion0
     /**
      * 编译的build-tools版本
      */
-    buildToolsVersion "23.0.1"
+    buildToolsVersion rootProject.ext.buildToolsVersion0
 
     /**
      * 资源映射
@@ -62,6 +64,9 @@ android {
 
     }
 
+    /**
+     * 签名信息
+     */
     signingConfigs {
         staging.initWith(signingConfigs.debug)
         release {
@@ -72,12 +77,25 @@ android {
         }
     }
 
+    /**
+     * 版本类型
+     */
     buildTypes {
+        debug {
+            buildConfigField("String","API_URL","\"debug_API_URL\"")
+            resValue "string","appname","debug AppName"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
+            buildConfigField("String","API_URL","\"release_API_URL\"")
+            resValue "string","appname","release AppName"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         staging {
+            buildConfigField("String","API_URL","\"staging_API_URL\"")
+            resValue "string","appname","staging AppName"
             applicationIdSuffix ".staging"
             versionNameSuffix "-staging"
             debuggable true
@@ -85,29 +103,95 @@ android {
         }
     }
 
+    /**
+     * 发布的不同版本
+     */
+    productFlavors {
+        red {
+            resValue "string", "flavor_string", "我是红色版本"
+            resValue "color", "flavor_color", "#ff0000"
+        }
+        blue {
+            resValue "string", "flavor_string", "我是蓝色版本"
+            resValue "color", "flavor_color", "#0000ff"
+        }
+    }
+
+    /**
+     * 依赖
+     */
+    dependencies {
+        /**
+         * 本地依赖形式
+         */
+        compile fileTree(include: ['*.jar'], dir: 'libs')
+        testCompile 'junit:junit:4.12'
+        /**
+         * 远程依赖简洁形式
+         */
+        compile 'com.android.support:appcompat-v7:25.3.1'
+        /**
+         * 远程依赖完全形式
+         */
+        compile group:"com.google.code.gson", name:"gson", version:"2.3"
+
+        testCompile "org.robolectric:robolectric:3.3.2"
+        /**
+         * 依赖项目
+         */
+        compile project(':library')
+        stagingCompile 'junit:junit:4.12'
+    }
+
+    /**
+     * 过滤
+     */
+    android.variantFilter { variant ->
+        if(variant.buildType.name.equals('release')) {
+            variant.setIgnore(true);
+            variant.getFlavors().each() { flavor ->
+                if (flavor.name.equals('blue')) {
+                }
+            }
+        }
+    }
+
+    /**
+     * 对输出的apk进行重命名
+     */
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            output.outputFile = new File(file.parent,file.name.replace(".apk","-${variant.versionName}.apk"))
+
+        }
+
+    }
+
 }
+
+
 
 /**
  * 依赖
  */
-dependencies {
-    /**
-     * 本地依赖形式
-     */
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    /**
-     * 远程依赖简洁形式
-     */
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    /**
-     * 远程依赖完全形式
-     */
-    compile 'com.google.code.gson:gson:2.3'
-    stagingCompile 'junit:junit:4.12'
+task hello{
+    println 'task hello'
 }
 
 task myTask << {
     println ' I am myTask'
 }
+
+
+task printf2 << {
+    println rootProject.ext.local
+    println propertiesFile
+    if (project.hasProperty('cmd')){
+        println cmd
+    }
+}
+
+
+
 
