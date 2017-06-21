@@ -141,6 +141,7 @@ android {
          */
         compile project(':library')
         stagingCompile 'junit:junit:4.12'
+        redCompile 'junit:junit:4.12'
     }
 
     /**
